@@ -1,0 +1,11 @@
+.env
+.env.local
+*.exe
+*.test
+*.out
+
+tmp/
+!tmp/.gitkeep
+
+.idea/
+.vscode/

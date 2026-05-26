@@ -1,0 +1,7 @@
+pre-commit:
+  parallel: true
+  commands:
+    # Tự động format code Go của những file đang staged trước khi commit
+    go-fmt:
+      glob: "*.go"
+      run: gofmt -w {staged_files}
