@@ -47,7 +47,6 @@ func NewR2(ctx context.Context, cfg config.R2Config) (*R2, error) {
 	}, nil
 }
 
-// PutObject uploads a single byte stream to R2 under the given key.
 func (r *R2) PutObject(ctx context.Context, key string, body io.Reader, contentType string) error {
 	_, err := r.client.PutObject(ctx, &s3.PutObjectInput{
 		Bucket:      aws.String(r.bucket),
@@ -61,7 +60,6 @@ func (r *R2) PutObject(ctx context.Context, key string, body io.Reader, contentT
 	return nil
 }
 
-// PutFile uploads a local file with content-type detected from extension.
 func (r *R2) PutFile(ctx context.Context, key, localPath string) error {
 	f, err := os.Open(localPath)
 	if err != nil {
@@ -78,7 +76,7 @@ func (r *R2) PutFile(ctx context.Context, key, localPath string) error {
 	if ct == "" {
 		ct = "application/octet-stream"
 	}
-	// Override for HLS playlists/segments (mime package may not know them on all platforms).
+
 	switch strings.ToLower(filepath.Ext(localPath)) {
 	case ".m3u8":
 		ct = "application/vnd.apple.mpegurl"
@@ -89,8 +87,6 @@ func (r *R2) PutFile(ctx context.Context, key, localPath string) error {
 	return r.PutObject(ctx, key, f, ct)
 }
 
-// PutDir walks a local directory and uploads every file under it, preserving
-// relative paths underneath keyPrefix. Files are uploaded concurrently.
 func (r *R2) PutDir(ctx context.Context, localDir, keyPrefix string, concurrency int) error {
 	if concurrency <= 0 {
 		concurrency = 4
@@ -153,7 +149,6 @@ func (r *R2) PutDir(ctx context.Context, localDir, keyPrefix string, concurrency
 	}
 }
 
-// PublicURL returns the public URL for a stored key, if a public domain is configured.
 func (r *R2) PublicURL(key string) string {
 	if r.publicDomain == "" {
 		return ""

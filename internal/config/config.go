@@ -34,7 +34,7 @@ func Load() (*Config, error) {
 	_ = godotenv.Load()
 
 	cfg := &Config{
-		Port: getEnv("PORT", "3000"),
+		Port: os.Getenv("PORT"),
 		R2: R2Config{
 			AccountID:       os.Getenv("CLOUDFLARE_ACCOUNT_ID"),
 			Endpoint:        os.Getenv("CLOUDFLARE_S3_API"),
@@ -62,9 +62,8 @@ func (c *Config) validate() error {
 		"CLOUDFLARE_R2_ACCESS_KEY_ID":     c.R2.AccessKeyID,
 		"CLOUDFLARE_R2_SECRET_ACCESS_KEY": c.R2.SecretAccessKey,
 		"CLOUDFLARE_R2_BUCKET_NAME":       c.R2.Bucket,
-		// Thay thế kiểm tra Connection String cũ bằng 2 biến API mới giống Node.js
-		"SUPABASE_URL":             c.DB.SupabaseURL,
-		"SUPABASE_PUBLISHABLE_KEY": c.DB.SupabaseAnonKey,
+		"SUPABASE_URL":                    c.DB.SupabaseURL,
+		"SUPABASE_PUBLISHABLE_KEY":        c.DB.SupabaseAnonKey,
 	}
 	for k, v := range required {
 		if v == "" {
@@ -72,11 +71,4 @@ func (c *Config) validate() error {
 		}
 	}
 	return nil
-}
-
-func getEnv(key, fallback string) string {
-	if v := os.Getenv(key); v != "" {
-		return v
-	}
-	return fallback
 }

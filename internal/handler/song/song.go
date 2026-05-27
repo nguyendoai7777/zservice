@@ -64,7 +64,6 @@ func (h *SongHandler) GetSongs(c *gin.Context) {
 		return
 	}
 
-	// 2. Gom tất cả artist_id và sub_artist_ids vào một Set
 	artistIdsMap := make(map[string]bool)
 	for _, song := range songs {
 		if song.ArtistID != nil && *song.ArtistID != "" {
@@ -110,7 +109,6 @@ func (h *SongHandler) GetSongs(c *gin.Context) {
 		}
 	}
 
-	// 3. Map dữ liệu trả về theo đúng format của Client yêu cầu
 	responseData := make([]SongResponse, len(songs))
 	for i, song := range songs {
 		subArtists := make([]SubArtist, len(song.SubArtistIDs))
@@ -149,7 +147,6 @@ func (h *SongHandler) GetSongs(c *gin.Context) {
 		}
 	}
 
-	// 4. Trả kết quả thành công
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"albums":  targetAlbums,

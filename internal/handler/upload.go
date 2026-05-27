@@ -19,11 +19,10 @@ import (
 
 type UploadHandler struct {
 	R2     *storage.R2
-	SB     *supabase.Client // FIX 2: Đổi kiểu từ *db.DB sang *supabase.Client
+	SB     *supabase.Client
 	TmpDir string
 }
 
-// FIX 3: Cập nhật lại tham số nhận vào là *supabase.Client
 func NewUploadHandler(r2 *storage.R2, supabaseClient *supabase.Client, tmpDir string) *UploadHandler {
 	return &UploadHandler{R2: r2, SB: supabaseClient, TmpDir: tmpDir}
 }
@@ -35,7 +34,6 @@ type uploadResponse struct {
 	DurationMS  int64  `json:"durationMs"`
 }
 
-// POST /api/upload — multipart form field "file"
 func (h *UploadHandler) Upload(c *gin.Context) {
 	start := time.Now()
 
@@ -52,7 +50,12 @@ func (h *UploadHandler) Upload(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("mkdir: %v", err)})
 		return
 	}
-	defer os.RemoveAll(workDir)
+	defer func(path string) {
+		err := os.RemoveAll(path)
+		if err != nil {
+
+		}
+	}(workDir)
 
 	srcPath := filepath.Join(workDir, "source"+filepath.Ext(fileHeader.Filename))
 	if err := c.SaveUploadedFile(fileHeader, srcPath); err != nil {

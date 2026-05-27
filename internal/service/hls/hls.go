@@ -9,13 +9,9 @@ import (
 )
 
 type TranscodeOptions struct {
-	// InputPath is the source audio file (mp3, wav, flac, ...).
-	InputPath string
-	// OutDir is where the .m3u8 + .ts segments will be written. Created if missing.
-	OutDir string
-	// AudioBitrate (e.g. "128k"). Defaults to "128k" when empty.
-	AudioBitrate string
-	// SegmentDuration seconds per .ts chunk. Defaults to 10 when 0.
+	InputPath       string
+	OutDir          string
+	AudioBitrate    string
 	SegmentDuration int
 }
 
@@ -24,8 +20,6 @@ type Result struct {
 	SegmentPaths []string // absolute paths to all .ts segments
 }
 
-// Transcode runs ffmpeg to convert the input audio into a VOD HLS stream.
-// Requires the `ffmpeg` binary to be installed and on PATH.
 func Transcode(opts TranscodeOptions) (*Result, error) {
 	if opts.InputPath == "" {
 		return nil, fmt.Errorf("hls: input path is empty")
@@ -49,13 +43,13 @@ func Transcode(opts TranscodeOptions) (*Result, error) {
 
 	err := ffmpeg.Input(opts.InputPath).
 		Output(playlist, ffmpeg.KwArgs{
-			"c:a":                "aac",
-			"b:a":                opts.AudioBitrate,
-			"vn":                 "",
-			"hls_time":           opts.SegmentDuration,
-			"hls_playlist_type":  "vod",
+			"c:a":                  "aac",
+			"b:a":                  opts.AudioBitrate,
+			"vn":                   "",
+			"hls_time":             opts.SegmentDuration,
+			"hls_playlist_type":    "vod",
 			"hls_segment_filename": segmentPattern,
-			"f":                  "hls",
+			"f":                    "hls",
 		}).
 		OverWriteOutput().
 		Run()
